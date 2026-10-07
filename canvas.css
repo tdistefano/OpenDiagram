@@ -1,0 +1,245 @@
+#canvas-container {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background: var(--canvas-bg);
+  /* Dot grid. size/position are driven from JS (applyViewport) so the grid
+     pans and zooms with the content instead of staying fixed to the screen. */
+  background-image: radial-gradient(circle, #2a2a35 1px, transparent 1px);
+  background-size: 24px 24px;
+  /* Set by applyViewport. Anything that must stay a fixed size on screen
+     multiplies by this (handles, hit areas, outlines). */
+  --inv-zoom: 1;
+}
+
+#canvas {
+  position: absolute;
+  inset: 0;
+}
+
+#world {
+  position: absolute;
+  top: 0; left: 0;
+  width: 0; height: 0;          /* children are positioned absolutely */
+  transform-origin: 0 0;
+}
+
+#connections-svg,
+#overlay-svg {
+  position: absolute;
+  top: 0; left: 0;
+  width: 1px; height: 1px;
+  overflow: visible;            /* draw at any canvas coordinate */
+  pointer-events: none;         /* only specific children opt back in */
+}
+/* Above every node (node z-index is 0..n). */
+#overlay-svg { z-index: 1000000; }
+
+/* ---------- Connections ---------- */
+.conn-group { cursor: pointer; }
+.conn-hit {
+  fill: none;
+  stroke: transparent;
+  stroke-width: calc(12px * var(--inv-zoom));
+  pointer-events: stroke;
+}
+.conn-glow {
+  fill: none;
+  stroke: var(--accent);
+  stroke-opacity: 0.25;
+  stroke-width: calc(9px * var(--inv-zoom));
+  stroke-linecap: round;
+}
+.conn-path { pointer-events: stroke; }
+.conn-group:hover .conn-path { stroke-opacity: 0.8; }
+.conn-label {
+  fill: #e8e8f0;
+  font-size: 11px;
+  font-family: 'DM Sans', sans-serif;
+  pointer-events: all;
+}
+.conn-label-bg { fill: #1a1a1e; pointer-events: all; }
+
+.conn-endpoint-handle {
+  r: calc(5px * var(--inv-zoom));
+  fill: var(--accent);
+  stroke: #fff;
+  stroke-width: calc(1.5px * var(--inv-zoom));
+  cursor: grab;
+  pointer-events: all;
+}
+
+.temp-conn-line {
+  stroke: var(--accent);
+  stroke-width: calc(2px * var(--inv-zoom));
+  stroke-dasharray: calc(6px * var(--inv-zoom)) calc(4px * var(--inv-zoom));
+}
+
+/* ---------- Overlays (screen space) ---------- */
+#select-box {
+  position: absolute;
+  border: 1px dashed var(--accent);
+  background: rgba(79,142,247,0.05);
+  pointer-events: none;
+  display: none;
+}
+
+#empty-hint {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+  color: var(--text2);
+  pointer-events: none;
+}
+#empty-hint h3 { font-size: 18px; font-weight: 500; opacity: 0.5; }
+#empty-hint p { font-size: 13px; opacity: 0.35; }
+
+/* ---------- Cursors ---------- */
+/* Tool cursors (class set by setTool). Listed first so the temporary
+   Space-pan cursors below win when both apply. */
+#canvas-container.tool-connect,
+#canvas-container.tool-connect .diagram-node { cursor: crosshair; }
+#canvas-container.tool-text { cursor: text; }
+#canvas-container.tool-pan { cursor: grab; }
+#canvas-container.tool-pan .diagram-node,
+#canvas-container.pan-ready .diagram-node { cursor: inherit; }
+
+#canvas-container.pan-ready { cursor: grab; }
+#canvas-container.panning,
+#canvas-container.panning .diagram-node { cursor: grabbing; }
+
+/* ---------- Mini toolbar ---------- */
+#mini-toolbar {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px;
+  z-index: 50;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+}
+
+.mini-btn {
+  width: 36px; height: 36px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: var(--text2);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  font-size: 13px;
+}
+.mini-btn:hover { background: var(--surface2); color: var(--text); }
+.mini-btn.active { background: rgba(79,142,247,0.2); color: var(--accent); }
+.mini-sep { width: 1px; height: 20px; background: var(--border); margin: 0 4px; }
+
+.mini-select {
+  height: 30px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text2);
+  font-size: 11px;
+  font-family: inherit;
+  padding: 0 6px;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.15s;
+}
+.mini-select:hover, .mini-select:focus { color: var(--text); border-color: var(--accent); }
+
+#zoom-display {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  color: var(--text2);
+  padding: 0 8px;
+  min-width: 50px;
+  text-align: center;
+}
+
+/* ---------- Context menu ---------- */
+#ctx-menu {
+  position: fixed;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 4px;
+  z-index: 1000;
+  min-width: 180px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+  display: none;
+}
+.ctx-item {
+  padding: 7px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text);
+  transition: background 0.1s;
+}
+.ctx-item:hover { background: var(--surface2); }
+.ctx-item.danger { color: var(--danger); }
+.ctx-item.disabled { opacity: 0.35; pointer-events: none; }
+.ctx-key { margin-left: auto; font-size: 11px; color: var(--text2); }
+.ctx-sep { height: 1px; background: var(--border); margin: 4px 0; }
+
+/* ---------- Sub-diagrams ---------- */
+/* Fade used while switching diagram (diagrams.js). */
+#world { transition: opacity 0.16s ease; }
+#world.diagram-fade { opacity: 0; }
+
+#breadcrumb-bar {
+  position: absolute;
+  top: 12px; left: 12px;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 5px 10px;
+  font-size: 12px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.35);
+  max-width: calc(100% - 24px);
+  overflow-x: auto;
+  white-space: nowrap;
+}
+#breadcrumb-bar .crumb {
+  color: var(--text2);
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+#breadcrumb-bar .crumb:hover { color: var(--text); background: var(--surface2); }
+#breadcrumb-bar .crumb-current { color: var(--text); cursor: default; font-weight: 500; }
+#breadcrumb-bar .crumb-current:hover { background: none; }
+#breadcrumb-bar .crumb-sep { color: var(--text2); opacity: 0.5; padding: 0 2px; }
+#breadcrumb-bar .crumb-delete {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px; height: 16px;
+  margin-left: 6px;
+  border-radius: 50%;
+  color: var(--text2);
+  cursor: pointer;
+}
+#breadcrumb-bar .crumb-delete:hover { background: var(--danger); color: #fff; }

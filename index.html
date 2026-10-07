@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Open Diagram</title>
+<link rel="stylesheet" href="main.css">
+<link rel="stylesheet" href="topbar.css">
+<link rel="stylesheet" href="canvas.css">
+<link rel="stylesheet" href="nodes.css">
+<link rel="stylesheet" href="leftpanel.css">
+<link rel="stylesheet" href="rightpanel.css">
+<link rel="stylesheet" href="statusbar.css">
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div id="topbar">
+  <span class="logo">⬡ Open Diagram</span>
+  <div class="topbar-sep"></div>
+  <input id="filename-input" type="text" value="Untitled Diagram" />
+  <div class="topbar-sep"></div>
+  <button class="tb-btn" onclick="newFile()" data-tip="New diagram">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+    New
+  </button>
+  <button class="tb-btn" onclick="saveFile()" data-tip="Save JSON (Ctrl+S)">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+    Save
+  </button>
+  <button class="tb-btn" id="choose-folder-btn" onclick="chooseSaveFolder()" data-tip="Choose save folder">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+  </button>
+  <button class="tb-btn" onclick="loadFileDialog()" data-tip="Open JSON (Ctrl+O)">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+    Open
+  </button>
+  <button class="tb-btn" onclick="exportPNG()" data-tip="Export whole diagram as PNG">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+    Export PNG
+  </button>
+  <button class="tb-btn" onclick="exportSVGFile()" data-tip="Export whole diagram as SVG">SVG</button>
+  <div class="topbar-sep"></div>
+  <button class="tb-btn" id="undo-btn" onclick="undo()" data-tip="Undo (Ctrl+Z)">↩ Undo</button>
+  <button class="tb-btn" id="redo-btn" onclick="redo()" data-tip="Redo (Ctrl+Y / Ctrl+Shift+Z)">↪ Redo</button>
+  <div class="spacer"></div>
+  <button class="tb-btn" onclick="fitToScreen()" data-tip="Fit to screen (Shift+F)">Fit</button>
+  <button class="tb-btn" onclick="resetView()" data-tip="Reset view (Ctrl+0)">1:1</button>
+  <button class="tb-btn" onclick="zoomOut()" data-tip="Zoom out (Ctrl+-)">−</button>
+  <button class="tb-btn" onclick="zoomIn()" data-tip="Zoom in (Ctrl+=)">+</button>
+</div>
+
+<div id="main">
+  <!-- LEFT PANEL (components/leftpanel.js) -->
+  <div id="left-panel">
+    <div class="panel-section">
+      <div class="panel-title">Tools</div>
+      <div class="tool-grid">
+        <button class="tool-btn" data-tool="select" title="Select (V)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 3l14 9-7 1-4 7z"/></svg>
+          Select
+        </button>
+        <button class="tool-btn" data-tool="connect" title="Connect (C)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          Connect
+        </button>
+        <button class="tool-btn" data-tool="text" title="Text (T)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+          Text
+        </button>
+        <button class="tool-btn" data-tool="pan" title="Pan (H, or hold Space)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 11V6a2 2 0 0 0-4 0v5"/><path d="M14 10V4a2 2 0 0 0-4 0v6"/><path d="M10 10.5V6a2 2 0 0 0-4 0v8"/><path d="M6 14a2 2 0 0 0-2 2v0a6 6 0 0 0 6 6h4a8 8 0 0 0 8-8v-1a2 2 0 0 0-2-2h0a2 2 0 0 0-2 2v1"/></svg>
+          Pan
+        </button>
+      </div>
+    </div>
+
+    <div id="shape-library">
+      <!-- Built-in categories are generated from SHAPE_LIBRARY (shapes.js). -->
+      <div id="builtin-shapes"></div>
+      <div class="shape-category">
+        <div class="shape-cat-title">Custom</div>
+        <label id="svg-upload-btn" for="svg-upload-input">+ Upload SVG</label>
+        <input type="file" id="svg-upload-input" accept=".svg,image/svg+xml" multiple hidden>
+        <div class="shapes-grid" id="custom-shapes-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CANVAS -->
+  <div id="canvas-container">
+    <!-- Sub-diagram trail (components/diagrams.js renderBreadcrumb) -->
+    <div id="breadcrumb-bar" hidden></div>
+    <!-- #canvas is screen-space: it fills the container and receives input. -->
+    <div id="canvas">
+      <!-- #world is canvas-space: one CSS transform (pan + zoom) positions
+           everything inside it. Layers, bottom to top:
+             connections-svg  edges
+             .diagram-node    shapes (inserted before overlay-svg)
+             overlay-svg      connection endpoint handles, drag preview line -->
+      <div id="world">
+        <svg id="connections-svg"><defs></defs></svg>
+        <svg id="overlay-svg"></svg>
+      </div>
+      <div id="empty-hint">
+        <h3>Start building your diagram</h3>
+        <p>Drag shapes from the left panel or double-click to add text</p>
+      </div>
+      <div id="select-box"></div>
+    </div>
+
+    <!-- MINI TOOLBAR -->
+    <div id="mini-toolbar">
+      <button class="mini-btn" data-tool="select" data-tip="Select (V)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 3l14 9-7 1-4 7z"/></svg>
+      </button>
+      <button class="mini-btn" data-tool="connect" data-tip="Connect (C)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </button>
+      <button class="mini-btn" data-tool="text" data-tip="Text (T)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+      </button>
+      <button class="mini-btn" data-tool="pan" data-tip="Pan (H / Space)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 11V6a2 2 0 0 0-4 0v5M14 10V4a2 2 0 0 0-4 0v6M10 10.5V6a2 2 0 0 0-4 0v8M6 14a2 2 0 0 0-2 2v0a6 6 0 0 0 6 6h4a8 8 0 0 0 8-8v-1a2 2 0 0 0-2-2h0a2 2 0 0 0-2 2v1"/></svg>
+      </button>
+      <div class="mini-sep"></div>
+      <select id="default-edge-routing" class="mini-select" title="Line style for new connections">
+        <option value="elbow">Elbow</option>
+        <option value="straight">Straight</option>
+        <option value="curve">Curved</option>
+      </select>
+      <select id="default-arrow-style" class="mini-select" title="Arrow for new connections">
+        <option value="arrow">Filled Arrow</option>
+        <option value="open">Open Arrow</option>
+        <option value="none">No Arrow</option>
+      </select>
+      <div class="mini-sep"></div>
+      <button class="mini-btn" onclick="zoomOut()" data-tip="Zoom out">−</button>
+      <span id="zoom-display">100%</span>
+      <button class="mini-btn" onclick="zoomIn()" data-tip="Zoom in">+</button>
+      <div class="mini-sep"></div>
+      <button class="mini-btn" onclick="fitToScreen()" data-tip="Fit to screen (Shift+F)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+      </button>
+      <button class="mini-btn" onclick="deleteSelected()" data-tip="Delete (Del)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL (components/properties.js) -->
+  <div id="right-panel">
+    <div class="panel-section">
+      <div class="panel-title">Properties</div>
+      <div id="no-selection" class="no-selection">Select an element to edit properties</div>
+    </div>
+
+    <div id="shape-props" hidden>
+      <div id="shape-multi-note" class="multi-note" hidden></div>
+      <div id="port-note" class="multi-note port-note" hidden></div>
+      <div class="prop-section-title">Entity</div>
+      <div class="prop-row" id="prop-label-row">
+        <div class="prop-label">Label</div>
+        <input class="prop-input" id="prop-label" type="text" placeholder="Enter label...">
+      </div>
+      <div class="prop-row" id="prop-description-row">
+        <div class="prop-label">Description</div>
+        <textarea class="prop-input prop-textarea" id="prop-description" rows="3" placeholder="Notes shown on hover..."></textarea>
+      </div>
+      <div class="prop-row">
+        <div class="prop-label">Fill Color</div>
+        <div class="color-swatch-grid" id="fill-swatches"></div>
+        <input class="prop-input prop-color" id="prop-fill" type="color">
+      </div>
+      <div class="prop-row">
+        <div class="prop-label">Stroke Color</div>
+        <input class="prop-input prop-color" id="prop-stroke" type="color">
+      </div>
+      <div class="prop-row">
+        <div class="prop-label">Stroke Width</div>
+        <input class="slider-input" id="prop-stroke-width" type="range" min="0" max="8" step="0.5">
+      </div>
+      <div class="prop-row">
+        <div class="prop-label">Text Color</div>
+        <input class="prop-input prop-color" id="prop-text-color" type="color">
+      </div>
+      <div class="prop-row">
+        <div class="prop-label">Corner Radius</div>
+        <input class="slider-input" id="prop-radius" type="range" min="0" max="40" step="1">
+      </div>
+
+      <div class="prop-section-title">Placement</div>
+      <div class="prop-row">
+        <div class="prop-label">Position</div>
+        <div class="color-row">
+          <input class="prop-input" id="prop-x" type="number" placeholder="X">
+          <input class="prop-input" id="prop-y" type="number" placeholder="Y">
+        </div>
+      </div>
+      <div class="prop-row">
+        <div class="prop-label">Size</div>
+        <div class="color-row">
+          <input class="prop-input" id="prop-w" type="number" placeholder="W" min="20">
+          <input class="prop-input" id="prop-h" type="number" placeholder="H" min="20">
+        </div>
+      </div>
+      <div class="prop-row">
+        <div class="prop-label">Opacity</div>
+        <input class="slider-input" id="prop-opacity" type="range" min="10" max="100" step="5">
+      </div>
+      <div class="prop-row">
+        <div class="prop-label">Font Size</div>
+        <input class="prop-input" id="prop-font-size" type="number" min="4" max="400" step="1">
+      </div>
+      <div class="prop-row">
+        <div class="prop-label">Label Position</div>
+        <button class="align-btn wide" id="prop-label-reset" title="Move the label back to the center">Reset to center</button>
+      </div>
+      <div class="prop-row">
+        <div class="prop-label">Align <span class="prop-hint">to first selected</span></div>
+        <div class="align-row">
+          <button class="align-btn" data-align="left" title="Align left">⊣</button>
+          <button class="align-btn" data-align="center" title="Center horizontally">⊕</button>
+          <button class="align-btn" data-align="right" title="Align right">⊢</button>
+          <button class="align-btn" data-align="top" title="Align top">⊤</button>
+          <button class="align-btn" data-align="middle" title="Center vertically">⊗</button>
+          <button class="align-btn" data-align="bottom" title="Align bottom">⊥</button>
+        </div>
+      </div>
+      <div class="prop-row">
+        <div class="prop-label">Arrange</div>
+        <div class="align-row">
+          <button class="align-btn" data-arrange="forward" title="Bring forward">↑</button>
+          <button class="align-btn" data-arrange="backward" title="Send backward">↓</button>
+          <button class="align-btn" data-arrange="front" title="Bring to front">⤒</button>
+          <button class="align-btn" data-arrange="back" title="Send to back (behind lines)">⤓</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="conn-props" hidden>
+      <div class="prop-section-title">Connection</div>
+      <div id="conn-multi-note" class="multi-note" hidden></div>
+      <div class="prop-row" id="conn-label-row">
+        <div class="prop-label">Label</div>
+        <input class="prop-input" id="conn-label-input" type="text" placeholder="Connection label...">
+      </div>
+      <div class="prop-row" id="conn-description-row">
+        <div class="prop-label">Description</div>
+        <textarea class="prop-input prop-textarea" id="conn-description-input" rows="3" placeholder="Notes shown on hover..."></textarea>
+      </div>
+      <div class="prop-row">
+        <div class="prop-label">Style</div>
+        <select class="prop-input" id="conn-style">
+          <option value="solid">Solid</option>
+          <option value="dashed">Dashed</option>
+          <option value="thick">Thick</option>
+        </select>
+      </div>
+      <div class="prop-row">
+        <div class="prop-label">Arrow Type</div>
+        <select class="prop-input" id="conn-arrow">
+          <option value="arrow">Filled Arrow</option>
+          <option value="open">Open Arrow</option>
+          <option value="none">None</option>
+        </select>
+      </div>
+      <div class="prop-row">
+        <div class="prop-label">Color</div>
+        <input class="prop-input prop-color" id="conn-color" type="color">
+      </div>
+      <div class="prop-row">
+        <div class="prop-label">Routing</div>
+        <select class="prop-input" id="conn-routing">
+          <option value="straight">Straight</option>
+          <option value="elbow">Elbow</option>
+          <option value="curve">Curved</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STATUS BAR -->
+<div id="statusbar">
+  <span id="status-tool">Tool: Select</span>
+  <span id="status-nodes">Nodes: 0</span>
+  <span id="status-conns">Connections: 0</span>
+  <span id="status-selected">Selected: none</span>
+  <span id="status-message"></span>
+  <span style="flex:1"></span>
+  <label class="status-color-label" title="Fill color of selected shapes">
+    Fill <input type="color" id="status-fill-color" class="status-color-input" disabled>
+  </label>
+  <label class="status-color-label" title="Color of selected connections">
+    Line <input type="color" id="status-line-color" class="status-color-input" disabled>
+  </label>
+  <span id="status-pos">0, 0</span>
+</div>
+
+<!-- CONTEXT MENU (actions in canvas.js CTX_ACTIONS) -->
+<div id="ctx-menu">
+  <div class="ctx-item" data-action="copy">Copy<span class="ctx-key">Ctrl+C</span></div>
+  <div class="ctx-item" data-action="paste">Paste<span class="ctx-key">Ctrl+V</span></div>
+  <div class="ctx-item" data-action="duplicate">Duplicate<span class="ctx-key">Ctrl+D</span></div>
+  <div class="ctx-sep ctx-sub-sep"></div>
+  <div class="ctx-item" data-action="sub-create">Create Sub-Diagram</div>
+  <div class="ctx-item" data-action="sub-open">Open Sub-Diagram<span class="ctx-key">Enter</span></div>
+  <div class="ctx-item danger" data-action="sub-remove">Remove Sub-Diagram</div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item" data-action="front">Bring to Front</div>
+  <div class="ctx-item" data-action="back">Send to Back</div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item" data-action="group">Group</div>
+  <div class="ctx-item" data-action="ungroup">Ungroup</div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item danger" data-action="delete">Delete<span class="ctx-key">Del</span></div>
+</div>
+
+<input type="file" id="file-input" accept=".json,application/json" hidden>
+
+<script src="components/core.js"></script>
+<script src="components/history.js"></script>
+<script src="components/diagrams.js"></script>
+<script src="components/ports.js"></script>
+<script src="components/shapes.js"></script>
+<script src="components/nodes.js"></script>
+<script src="components/connections.js"></script>
+<script src="components/selection.js"></script>
+<script src="components/properties.js"></script>
+<script src="components/commands.js"></script>
+<script src="components/leftpanel.js"></script>
+<script src="components/fileio.js"></script>
+<script src="components/canvas.js"></script>
+</body>
+</html>

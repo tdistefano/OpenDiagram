@@ -1,0 +1,36 @@
+#statusbar {
+  height: 24px;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  gap: 16px;
+  font-size: 11px;
+  color: var(--text2);
+  flex-shrink: 0;
+}
+
+#status-pos, #zoom-display {
+  font-family: 'DM Mono', monospace;
+}
+
+#status-message { color: var(--green); }
+
+.status-color-label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+}
+.status-color-input {
+  width: 14px;
+  height: 14px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: none;
+  cursor: pointer;
+}
+.status-color-input:disabled { cursor: not-allowed; opacity: 0.35; }
+.status-color-label:has(.status-color-input:disabled) { cursor: not-allowed; }

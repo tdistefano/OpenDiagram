@@ -1,0 +1,166 @@
+.diagram-node {
+  position: absolute;
+  cursor: move;
+  user-select: none;
+}
+
+.node-shape {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;   /* the node div is the hit target */
+}
+.node-shape svg {
+  display: block;         /* inline SVG would sit on a text baseline */
+  overflow: visible;      /* don't clip strokes at the edges */
+}
+
+.node-label,
+.node-label-editor {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  font-family: 'DM Sans', sans-serif;
+  color: #fff;
+  line-height: 1.3;
+  word-break: break-word;
+}
+
+.node-label {
+  width: 90%;
+  /* Keep Shift+Enter line breaks. The old version collapsed them on display. */
+  white-space: pre-wrap;
+  pointer-events: none;   /* clicks on the text act on the node */
+}
+
+.node-label-editor {
+  width: 85%;
+  background: transparent;
+  border: none;
+  outline: none;
+  resize: none;
+  overflow: hidden;
+  cursor: text;
+  user-select: text;
+  z-index: 20;
+}
+
+/* A text box has no outline, so show a faint one while its text is being
+   edited so you can see where it is. */
+.diagram-node[data-type="text"]:has(.node-label-editor) {
+  outline: calc(1px * var(--inv-zoom)) dashed var(--border);
+}
+
+/* ---------- Selection ---------- */
+.diagram-node.selected {
+  outline: calc(2px * var(--inv-zoom)) solid var(--accent);
+  outline-offset: calc(2px * var(--inv-zoom));
+}
+/* Target shape while dragging a new connection onto it. */
+.diagram-node.drop-target {
+  outline: calc(2px * var(--inv-zoom)) dashed var(--green);
+  outline-offset: calc(4px * var(--inv-zoom));
+}
+
+/* ---------- Handles ----------
+   Sizes are multiplied by --inv-zoom so they stay the same size on screen
+   at any zoom (the node itself is scaled by the #world transform). */
+.conn-handle,
+.resize-handle,
+.label-handle {
+  position: absolute;
+  width: calc(10px * var(--inv-zoom));
+  height: calc(10px * var(--inv-zoom));
+  background: var(--accent);
+  border: calc(2px * var(--inv-zoom)) solid white;
+  z-index: 10;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s;
+}
+
+/* Side handles: drag from one to start a connection. */
+.conn-handle {
+  border-radius: 50%;
+  cursor: crosshair;
+  transform: translate(-50%, -50%);
+}
+.conn-handle[data-pos="top"]    { top: 0;    left: 50%; }
+.conn-handle[data-pos="right"]  { top: 50%;  left: 100%; }
+.conn-handle[data-pos="bottom"] { top: 100%; left: 50%; }
+.conn-handle[data-pos="left"]   { top: 50%;  left: 0; }
+#canvas-container.tool-select .diagram-node:hover .conn-handle,
+#canvas-container.tool-connect .diagram-node:hover .conn-handle,
+.diagram-node.selected .conn-handle,
+.diagram-node.drop-target .conn-handle { opacity: 1; pointer-events: auto; }
+
+.resize-handle {
+  right: 0; bottom: 0;
+  transform: translate(50%, 50%);
+  border-radius: 2px;
+  cursor: se-resize;
+}
+.diagram-node.selected .resize-handle { opacity: 1; pointer-events: auto; }
+
+/* Label handle: sits just above the label text; drag it to move the label.
+   Only when exactly one shape is selected. */
+.label-handle {
+  left: 50%;
+  top: 0;
+  transform: translate(-50%, -140%) rotate(45deg);
+  background: var(--yellow);
+  border-radius: 2px;
+  cursor: move;
+}
+.diagram-node.only-selected .label-handle { opacity: 1; pointer-events: auto; }
+
+/* Sub-diagram badge (top-right corner): click to open. */
+.node-drill-badge {
+  position: absolute;
+  top: 0; right: 0;
+  width: calc(18px * var(--inv-zoom));
+  height: calc(18px * var(--inv-zoom));
+  transform: translate(35%, -35%);
+  border-radius: 50%;
+  background: var(--accent);
+  border: calc(2px * var(--inv-zoom)) solid var(--surface);
+  color: #fff;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  cursor: zoom-in;
+  z-index: 11;
+}
+.diagram-node.has-subdiagram .node-drill-badge { display: flex; }
+.node-drill-badge:hover { filter: brightness(1.2); }
+.node-drill-badge svg { width: 55%; height: 55%; pointer-events: none; }
+
+/* Sub-diagram port (input/output): tag above the shape, dashed outline. */
+.port-tag {
+  display: none;
+  position: absolute;
+  left: 50%; bottom: 100%;
+  transform: translate(-50%, calc(-4px * var(--inv-zoom)));
+  padding: 0 calc(6px * var(--inv-zoom));
+  border-radius: calc(8px * var(--inv-zoom));
+  font-size: calc(10px * var(--inv-zoom));
+  line-height: calc(16px * var(--inv-zoom));
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: #0f0f10;
+  pointer-events: none;
+}
+.diagram-node[data-port="in"] .port-tag,
+.diagram-node[data-port="both"] .port-tag { display: block; background: var(--green); }
+.diagram-node[data-port="out"] .port-tag { display: block; background: var(--yellow); }
+.diagram-node[data-port="in"]:not(.selected),
+.diagram-node[data-port="both"]:not(.selected) {
+  outline: calc(1px * var(--inv-zoom)) dashed var(--green);
+  outline-offset: calc(4px * var(--inv-zoom));
+}
+.diagram-node[data-port="out"]:not(.selected) {
+  outline: calc(1px * var(--inv-zoom)) dashed var(--yellow);
+  outline-offset: calc(4px * var(--inv-zoom));
+}

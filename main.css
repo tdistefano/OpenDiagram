@@ -1,0 +1,37 @@
+ @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0f0f10;
+    --surface: #1a1a1e;
+    --surface2: #222228;
+    --border: #2e2e38;
+    --accent: #4f8ef7;
+    --accent2: #7c3aed;
+    --text: #e8e8f0;
+    --text2: #8888a0;
+    --danger: #ef4444;
+    --green: #22c55e;
+    --yellow: #f59e0b;
+    --canvas-bg: #13131a;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    user-select: none;
+  }
+  #main {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* Make the `hidden` attribute win over any display rule. */
+  [hidden] { display: none !important; }

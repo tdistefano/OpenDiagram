@@ -1,0 +1,136 @@
+#right-panel {
+  width: 220px;
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  flex-shrink: 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.no-selection {
+  color: var(--text2);
+  font-size: 12px;
+  padding: 4px 4px 8px;
+  opacity: 0.6;
+}
+
+.multi-note {
+  color: var(--text2);
+  font-size: 11px;
+  padding: 8px 12px;
+  opacity: 0.8;
+}
+
+.prop-row {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Divides the panel into "Entity" (what it is) and "Placement" (where it's
+   drawn). */
+.prop-section-title {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--text2);
+  padding: 10px 12px 6px;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+}
+.prop-hint {
+  font-size: 10px;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  opacity: 0.6;
+}
+
+.prop-label {
+  font-size: 11px;
+  color: var(--text2);
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.prop-input {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 13px;
+  font-family: inherit;
+  padding: 6px 8px;
+  outline: none;
+  transition: border-color 0.15s;
+  user-select: text;
+}
+.prop-input:focus { border-color: var(--accent); }
+.prop-color { height: 30px; padding: 2px 4px; cursor: pointer; }
+#prop-fill { margin-top: 8px; }
+
+.prop-textarea {
+  resize: vertical;
+  min-height: 44px;
+  line-height: 1.4;
+}
+
+.color-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.color-swatch-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.color-swatch {
+  width: 20px; height: 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border-color 0.15s, transform 0.1s;
+}
+.color-swatch:hover { transform: scale(1.1); }
+.color-swatch.active { border-color: white; }
+
+.slider-input {
+  width: 100%;
+  accent-color: var(--accent);
+  margin-top: 4px;
+}
+
+.align-row {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.align-btn {
+  flex: 1;
+  min-width: 28px;
+  height: 28px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  color: var(--text2);
+  cursor: pointer;
+  font-size: 12px;
+  font-family: inherit;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.align-btn.wide { width: 100%; font-size: 11px; }
+.align-btn:hover { background: var(--border); color: var(--text); }
+
+.port-note { color: var(--green); line-height: 1.4; }

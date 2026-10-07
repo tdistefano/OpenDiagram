@@ -1,0 +1,81 @@
+    #topbar {
+        height: 48px;
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        padding: 0 12px;
+        gap: 8px;
+        z-index: 100;
+        flex-shrink: 0;
+    }
+
+    .logo {
+        font-weight: 600;
+        font-size: 15px;
+        color: var(--accent);
+        margin-right: 8px;
+        letter-spacing: -0.3px;
+    }
+
+    .topbar-sep { width: 1px; height: 24px; background: var(--border); margin: 0 4px; }
+
+    .tb-btn {
+        height: 32px;
+        padding: 0 10px;
+        background: transparent;
+        border: 1px solid transparent;
+        border-radius: 6px;
+        color: var(--text2);
+        font-size: 13px;
+        font-family: inherit;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.15s;
+        white-space: nowrap;
+    }
+    .tb-btn:hover { background: var(--surface2); color: var(--text); border-color: var(--border); }
+    .tb-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+    .tb-btn svg { flex-shrink: 0; }
+
+        #filename-input {
+        background: transparent;
+        border: 1px solid transparent;
+        border-radius: 6px;
+        color: var(--text);
+        font-size: 14px;
+        font-family: inherit;
+        padding: 4px 8px;
+        outline: none;
+        transition: border-color 0.15s;
+    }
+    #filename-input:hover, #filename-input:focus { border-color: var(--border); background: var(--surface2); }
+
+    .spacer { flex: 1; }
+    .tb-btn:disabled { opacity: 0.35; cursor: default; }
+    .tb-btn:disabled:hover { background: transparent; color: var(--text2); border-color: transparent; }
+
+    /* Tooltips from data-tip. In the top bar they open downward (the old
+       version opened them upward, off the top of the window). */
+    [data-tip] { position: relative; }
+    [data-tip]::after {
+        content: attr(data-tip);
+        position: absolute;
+        bottom: calc(100% + 6px);
+        left: 50%;
+        transform: translateX(-50%);
+        background: #000;
+        color: #fff;
+        font-size: 11px;
+        padding: 3px 7px;
+        border-radius: 4px;
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.15s;
+        z-index: 200;
+    }
+    [data-tip]:hover::after { opacity: 1; }
+    #topbar [data-tip]::after { bottom: auto; top: calc(100% + 6px); }

@@ -1,0 +1,126 @@
+#left-panel {
+  width: 220px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.panel-section {
+  border-bottom: 1px solid var(--border);
+  padding: 8px;
+}
+
+.panel-title {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--text2);
+  padding: 4px 4px 8px;
+}
+
+/* TOOLS */
+.tool-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+}
+
+.tool-btn {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text2);
+  font-size: 12px;
+  font-family: inherit;
+  padding: 8px 6px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.15s;
+}
+.tool-btn:hover { background: var(--border); color: var(--text); }
+.tool-btn.active { background: rgba(79,142,247,0.15); border-color: var(--accent); color: var(--accent); }
+.tool-btn svg { width: 18px; height: 18px; }
+
+/* SHAPE LIBRARY */
+#shape-library {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.shape-category { margin-bottom: 12px; }
+.shape-cat-title {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text2);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  padding: 0 2px;
+}
+
+.shapes-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+}
+
+.shape-item {
+  aspect-ratio: 1;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text2);          /* icons stroke with currentColor */
+  cursor: grab;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  padding: 6px;
+}
+.shape-item:hover { border-color: var(--accent); background: rgba(79,142,247,0.1); color: var(--text); }
+.shape-item svg { width: 22px; height: 22px; }
+.shape-item img { width: 22px; height: 22px; object-fit: contain; pointer-events: none; }
+
+/* CUSTOM SVG UPLOAD */
+#svg-upload-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 30px;
+  background: var(--surface2);
+  border: 1px dashed var(--border);
+  border-radius: 6px;
+  color: var(--text2);
+  font-size: 11px;
+  cursor: pointer;
+  margin-bottom: 6px;
+  transition: all 0.15s;
+}
+#svg-upload-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(79,142,247,0.1); }
+
+.shape-item.custom-shape { position: relative; }
+.custom-shape-remove {
+  position: absolute;
+  top: -5px; right: -5px;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--danger);
+  color: #fff;
+  font-size: 10px;
+  line-height: 14px;
+  text-align: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.shape-item.custom-shape:hover .custom-shape-remove { opacity: 1; }
